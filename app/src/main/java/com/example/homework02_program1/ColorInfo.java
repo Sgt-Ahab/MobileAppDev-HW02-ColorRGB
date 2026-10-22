@@ -1,6 +1,8 @@
+package com.example.homework02_program1;
+
 //Name: David Sargent
 //Date: 10-21-2026
-//Desc: ColorInfo class, takes three integers, and formats Hex String
+//Desc: com.example.homework02_program1.ColorInfo class, takes three integers, and formats Hex String
 public class ColorInfo {
     //Make three ints for RGB
     private int redNum;
@@ -8,11 +10,7 @@ public class ColorInfo {
     private int greenNum;
 
     //Base-Constructor; Then Overloaded;
-    public void initRGB()
-    {
-
-    }
-    public void assembleRGB(int num1, int num2, int num3)
+    public ColorInfo(int num1, int num2, int num3)
     {
         //R-N1; G-N2; B-N3;
         redNum = num1;
