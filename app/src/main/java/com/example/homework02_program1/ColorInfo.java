@@ -1,5 +1,7 @@
 package com.example.homework02_program1;
 
+import android.graphics.Color;
+
 //Name: David Sargent
 //Date: 10-21-2026
 //Desc: com.example.homework02_program1.ColorInfo class, takes three integers, and formats Hex String
@@ -8,7 +10,7 @@ public class ColorInfo {
     private int redNum;
     private int blueNum;
     private int greenNum;
-
+    private String hexCode;
     //Base-Constructor; Then Overloaded;
     public ColorInfo(int num1, int num2, int num3)
     {
@@ -16,6 +18,9 @@ public class ColorInfo {
         redNum = num1;
         greenNum = num2;
         blueNum = num3;
+        int num4 = Color.rgb(num1, num2, num3);
+        hexCode = Integer.toHexString(num4);
+        hexCode = "#" + hexCode;
     }
     //Generated Getter & Setters
     public int getRedNum() {
@@ -41,4 +46,6 @@ public class ColorInfo {
     public void setGreenNum(int greenNum) {
         this.greenNum = greenNum;
     }
+    public String getHexCode(){ return hexCode; }
+    public void setHexCode() { this.hexCode = hexCode; }
 }

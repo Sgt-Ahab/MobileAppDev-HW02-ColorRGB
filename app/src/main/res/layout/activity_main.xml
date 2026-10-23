@@ -5,6 +5,7 @@
     android:id="@+id/main_vert_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context=".MainActivity">
 
     <TextView
@@ -40,8 +41,9 @@
 
     <SeekBar
         android:id="@+id/sb_main_red"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="342dp"
+        android:layout_height="49dp"
+        android:max="255"
         app:layout_constraintBottom_toTopOf="@+id/tv_main_green"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,9 +65,10 @@
 
     <SeekBar
         android:id="@+id/sb_main_green"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="350dp"
+        android:layout_height="34dp"
         android:layout_marginBottom="30dp"
+        android:max="255"
         app:layout_constraintBottom_toTopOf="@+id/sb_main_blue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -88,11 +91,12 @@
 
     <SeekBar
         android:id="@+id/sb_main_blue"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="362dp"
+        android:layout_height="34dp"
+        android:max="255"
         app:layout_constraintBottom_toTopOf="@+id/tv_main_hex"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.593"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sb_main_green" />
 

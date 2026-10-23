@@ -58,7 +58,7 @@ public class ColorAdapter extends BaseAdapter
         //Gather data from list of colors
         ColorInfo color = listofColors.get(position);
         String colorString = "Red: " + color.getRedNum() + "; Green: " + color.getGreenNum() + "; Blue: " + color.getBlueNum() + ";";
-        String hextString = "null"; // Empty for now <- Format?
+        String hextString = color.getHexCode(); // Empty for now <- Format?
 
         colorText.setText(colorString);
         hexText.setText(hextString);
