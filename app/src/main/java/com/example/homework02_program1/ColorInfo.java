@@ -18,9 +18,9 @@ public class ColorInfo {
         redNum = num1;
         greenNum = num2;
         blueNum = num3;
-        int num4 = Color.rgb(num1, num2, num3);
-        hexCode = Integer.toHexString(num4);
-        hexCode = "#" + hexCode;
+        //Format to UpperCase Hexadecimal representation
+        hexCode = String.format("%02X%02X%02X", redNum, greenNum, blueNum);
+
     }
     //Generated Getter & Setters
     public int getRedNum() {

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -23,7 +24,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,17 +40,11 @@ public class MainActivity extends AppCompatActivity {
     ListView lv_j_colorList;
     ColorAdapter colorAdapter;
     View mainLay;
-    CharSequence sb_red_sequence;
-    CharSequence sb_green_sequence;
-    CharSequence sb_blue_sequence;
     private int blueNum = 255;
     private int redNum = 255;
     private int greenNum = 255;
-    int[] rgb = {redNum, blueNum, greenNum};
 
     //Default white
-    private int RGBNum;
-    private String hexCode = "";
     private ArrayList<com.example.homework02_program1.ColorInfo> listofColors;
 
     @Override
@@ -81,9 +75,6 @@ public class MainActivity extends AppCompatActivity {
         btn_j_saveColor = findViewById(R.id.btn_main_save);
         listofColors = new ArrayList<>();
         mainLay = findViewById(R.id.main_vert_layout);
-        sb_green_sequence = sb_j_greenBar.getAccessibilityClassName();
-        sb_red_sequence = sb_j_redBar.getAccessibilityClassName();
-        sb_blue_sequence = sb_j_blueBar.getAccessibilityClassName();
         //================================================
         //Function Calls
         addColorButtonClickEvent();
@@ -92,13 +83,16 @@ public class MainActivity extends AppCompatActivity {
         RedChangeEvent();
         BlueChangeEvent();
         GreenChangeEvent();
+        addListViewClickerEvent();
         //Begin assembling the colors
-        RGBNum = assembleRGB(GetRedNum(), GetGreenNum(), GetBlueNum());
-        hexCode = assembleHex(RGBNum);
-        tv_j_hexView.setText(hexCode);
-        Log.d("ColorCode", "RGB: " + RGBNum);
-        Log.d("HexCode", "HexString: " + hexCode);
-        mainLay.setBackgroundColor(Color.parseColor("#"+hexCode));
+        tv_j_redView.setText("Red: " + sb_j_redBar.getProgress());
+        tv_j_blueView.setText("Blue: " + sb_j_blueBar.getProgress());
+        tv_j_greenView.setText("Green: " + sb_j_greenBar.getProgress());
+        tv_j_hexView.setText("#"+ assembleHex());
+        //--Dead Logs--
+        //Log.d("ColorCode", "RGB: " + RGBNum);
+        //Log.d("HexCode", "HexString: " + hexCode);
+        UpdateRGB();
 
         //Adapter init + nesting
         colorAdapter = new ColorAdapter(this, listofColors);
@@ -111,6 +105,20 @@ public class MainActivity extends AppCompatActivity {
         btn_j_saveColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //init newColor to pass
+                Log.d("UI", "Save Button is pressed!");
+                int rN, gN, bN;
+                rN = sb_j_redBar.getProgress();
+                gN = sb_j_greenBar.getProgress();
+                bN = sb_j_blueBar.getProgress();
+                ColorInfo c = new ColorInfo(rN, gN, bN);
+                listofColors.add(c);
+                //Notify ColorAdapter the Dataset changed
+                colorAdapter.notifyDataSetChanged();
+
+                sb_j_blueBar.setProgress(255);
+                sb_j_redBar.setProgress(255);
+                sb_j_greenBar.setProgress(255);
 
             }
         });
@@ -143,7 +151,9 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tv_j_redView.setText("Red: " + progress);
                 SetRedNumber(progress);
-                UpdateRGB(progress, seekBar);
+                UpdateRGB();
+                tv_j_hexView.setText("#"+ assembleHex());
+                LuminanceCheck();
             }
 
             @Override
@@ -164,7 +174,9 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tv_j_blueView.setText("Blue: " + progress);
                 SetBlueNumber(progress);
-                UpdateRGB(progress, seekBar);
+                UpdateRGB();
+                tv_j_hexView.setText("#"+ assembleHex());
+                LuminanceCheck();
             }
 
             @Override
@@ -185,7 +197,9 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 tv_j_greenView.setText("Green: " + progress);
                 SetGreenNumber(progress);
-                UpdateRGB(progress, seekBar);
+                UpdateRGB();
+                tv_j_hexView.setText("#"+ assembleHex());
+                LuminanceCheck();
             }
 
             @Override
@@ -223,37 +237,48 @@ public class MainActivity extends AppCompatActivity {
     {
         return redNum;
     }
-    private int assembleRGB(int R, int G, int B)
-    {
-        return rgb(R,G,B);
-    }
-    private String assembleHex(int RGB)
+    private String assembleHex()
     {
         //Take RGB -> Make HexCode for Hex String
-        Log.d("Assemble Hex", "Hex: " + Integer.toHexString(RGB));
-        return Integer.toHexString(RGB);
-    }
-    private void UpdateRGB(int number, SeekBar seekBar)
-    {
-        if(seekBar.getAccessibilityClassName() == sb_red_sequence)
-        {
-            rgb[0] = number;
-        }
-        else if(seekBar.getAccessibilityClassName() == sb_blue_sequence)
-        {
-            rgb[2] = number;
-        }
-        else {
-            rgb[1] = number;
-        }
-        setBackgroundColor(assembleHex(assembleRGB(rgb[0], rgb[1], rgb[2])));
-    }
-    private void setBackgroundColor(String hexCode)
-    {
-        //hexCode to color, then we check luminance
-        //'ffffff' != #ffffff <- need our hash
-        hexCode = "#" + hexCode;
-        mainLay.setBackgroundColor(Color.parseColor(hexCode));
 
+        return String.format("%02X%02X%02X", redNum, greenNum, blueNum);
+    }
+    private void UpdateRGB()
+    {
+        //Use native Color.rgb()
+        mainLay.setBackgroundColor(rgb(redNum, greenNum, blueNum));
+    }
+    private void LuminanceCheck()
+    {
+        //Uses weighted formula, and calls a bool switch, above 128 is black
+        double luminance = (redNum * 0.2126) + (0.7152 * greenNum) + (0.0722 * blueNum);
+        if (luminance < 128)
+        {
+            TextColorChange(Color.WHITE);
+        }
+        else
+        {
+            TextColorChange(Color.BLACK);
+        }
+    }
+    private void TextColorChange(int C)
+    {
+        tv_j_redView.setTextColor(C);
+        tv_j_greenView.setTextColor(C);
+        tv_j_blueView.setTextColor(C);
+        tv_j_hexView.setTextColor(C);
+    }
+    private void addListViewClickerEvent()
+    {
+        lv_j_colorList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //This is the Reload For the colors:
+                ColorInfo item = listofColors.get(position);
+                sb_j_redBar.setProgress(item.getRedNum());
+                sb_j_blueBar.setProgress(item.getBlueNum());
+                sb_j_greenBar.setProgress(item.getGreenNum());
+            }
+        });
     }
 }

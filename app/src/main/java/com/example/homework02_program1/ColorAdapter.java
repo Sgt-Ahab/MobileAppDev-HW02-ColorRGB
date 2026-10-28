@@ -1,6 +1,12 @@
+//Name: David Sargent
+//Date: 10-21-2026
+//Desc: com.example.homework02_program1.ColorAdapter Class, handles the data-transfer, color assembling, text luminance
 package com.example.homework02_program1;
 
+import static android.graphics.Color.rgb;
+
 import android.content.Context;
+import android.graphics.Color;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +16,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-//Name: David Sargent
-//Date: 10-21-2026
-//Desc: com.example.homework02_program1.ColorAdapter Class, handles the data-transfer, color assembling, text luminance
 public class ColorAdapter extends BaseAdapter
 {
     Context context;
@@ -57,11 +60,31 @@ public class ColorAdapter extends BaseAdapter
 
         //Gather data from list of colors
         ColorInfo color = listofColors.get(position);
-        String colorString = "Red: " + color.getRedNum() + "; Green: " + color.getGreenNum() + "; Blue: " + color.getBlueNum() + ";";
-        String hextString = color.getHexCode(); // Empty for now <- Format?
+        //Since we reuse data, make vars colorNumber rN -> redNumber saves keystrokes
+        int rN, gN, bN;
+        rN = color.getRedNum();
+        gN = color.getGreenNum();
+        bN = color.getBlueNum();
+        String colorString = "Red: " + rN + "; Green: " + gN + "; Blue: " + bN + ";";
+        String hexString = "#" + color.getHexCode(); // Kept dirty in object, add Hash code here
 
         colorText.setText(colorString);
-        hexText.setText(hextString);
+        hexText.setText(hexString);
+        //Set the object's background
+        convertView.setBackgroundColor(rgb(rN, gN, bN));
+
+        //Luminance check
+        double luminance = (rN * 0.2126) + (0.7152 * gN) + (0.0722 * bN);
+        if (luminance < 128)
+        {
+            colorText.setTextColor(Color.WHITE);
+            hexText.setTextColor(Color.WHITE);
+        }
+        else
+        {
+            colorText.setTextColor(Color.BLACK);
+            hexText.setTextColor(Color.BLACK);
+        }
 
         return convertView;
     }
